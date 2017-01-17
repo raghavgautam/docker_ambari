@@ -12,7 +12,7 @@ elif [[ $1 == "start" ]]; then
     docker network create anw
     docker run -p 8080:8080 --network anw --name ambari$domain --volume "${DIR}":/host_pwd --volume "${HOME}":/host_home -d docker_ambari bash -c "cd /host_pwd; source ambari-bootstrap.sh"
     node_names=()
-    for i in 0{1..3}; do
+    for i in 0{1..2}; do
         node_name=node$i$domain
         node_names+=($node_name)
         docker run --name $node_name -h $node_name --network anw --volume "${DIR}":/host_pwd --volume "${HOME}":/host_home -d raghavgautam/ubuntu bash -c 'cd /host_pwd/; source node-bootstrap.sh'
