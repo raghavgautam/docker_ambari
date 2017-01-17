@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# editor temp files
+*~
+*.swp
+
+# osx files
+.DS_Store
+
 # C extensions
 *.so
 
