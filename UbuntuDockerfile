@@ -2,7 +2,7 @@ from ubuntu:14.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install openssh-server wget -y
+RUN apt-get install openssh-server wget ntp -y
 
 ADD ssh /root/.ssh
 RUN chmod 600 /root/.ssh/id_rsa
