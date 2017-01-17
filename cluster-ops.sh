@@ -19,8 +19,8 @@ elif [[ $1 == "start" ]]; then
     done
     sleep 3
     bash "${BASH_SOURCE[0]}" status
-    echo copying node names & ssh private key to clipboard
-    {echo ${node_names[@]} | tr ' ' '\n'; echo; cat ssh/id_rsa} | pbcopy
+    echo "copying node names and ssh private key to clipboard"
+    ( echo ${node_names[@]} | tr ' ' '\n'; echo; cat ssh/id_rsa ) | pbcopy
     echo "Done."
 elif [[ $1 == "stop" ]]; then
     docker kill $(docker ps -f=network=anw -q) 2>/dev/null || echo "No running containers found."
