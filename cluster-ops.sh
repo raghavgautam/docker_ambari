@@ -4,18 +4,21 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ $1 == "build" ]]; then
     export DOCKER_OPT="--no-cache"
+    echo "building images..."
     docker run --rm raghavgautam/ubuntu "true" || docker build ${DOCKER_OPT} -t raghavgautam/ubuntu --file UbuntuDockerfile .
     docker build ${DOCKER_OPT} -t docker_ambari --file Dockerfile .
+    echo "building images...done."
 elif [[ $1 == "start" ]]; then
+    docker run --rm raghavgautam/ubuntu "true" || bash "${BASH_SOURCE[0]}" build || { echo "Image creation failed"; exit 1; }
     bash "${BASH_SOURCE[0]}" stop
     domain=".hw.com"
     docker network create anw
-    docker run -p 8080:8080 --network anw --name ambari$domain --volume "${DIR}":/host_pwd --volume "${HOME}":/host_home -d docker_ambari bash -c "cd /host_pwd; source ambari-bootstrap.sh"
+    docker run -P -p 8080:8080 --network anw --name ambari$domain -h ambari$domain --volume "${DIR}":/host_pwd --volume "${HOME}":/host_home -d docker_ambari bash -c "cd /host_pwd; source ambari-bootstrap.sh"
     node_names=()
     for i in 0{1..2}; do
         node_name=node$i$domain
         node_names+=($node_name)
-        docker run --name $node_name -h $node_name --network anw --volume "${DIR}":/host_pwd --volume "${HOME}":/host_home -d raghavgautam/ubuntu bash -c 'cd /host_pwd/; source node-bootstrap.sh'
+        docker run -P --name $node_name -h $node_name --network anw --volume "${DIR}":/host_pwd --volume "${HOME}":/host_home -d raghavgautam/ubuntu bash -c 'cd /host_pwd/; source node-bootstrap.sh'
     done
     sleep 3
     bash "${BASH_SOURCE[0]}" status
